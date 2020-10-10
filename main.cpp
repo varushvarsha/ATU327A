@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     }
     
     // display what has been downloaded
-/*
+
     for(std::string const &e: instrument_names) {
 	try {
 	    express::parser omega("./CSVD/"+e+".csv");
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 	    println("Error: ", e, ex.what());
 	}
     }
-*/
+
 
     return 0;
 }
