@@ -3,9 +3,6 @@
 
 
 LDLIBS += -lasan -lm -lcurl -lpthread
-#LDLIBS += -fsanitize=thread -lm -lcurl -lpthread 
-# CXX     =   clang++-10
-# CC      =   clang++-10
 CXX     =   g++-10
 CC      =   g++-10
 
