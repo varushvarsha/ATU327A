@@ -43,12 +43,13 @@ int main(int argc, char* argv[]) {
         // load
         feedbook.push_back(std::thread([=](){
 	    // println(instrument_names.at(i), "loaded");
-					   printf("\r%12ld loading %s", i, instrument_names.at(i).c_str()); fflush(stdout);
+					   printf("\r\x1b[93m%12ld\x1b[0m loading \x1b[94m%s\x1b[0m", i, instrument_names.at(i).c_str());
+					   std::fflush(stdout);
 					   try {
 					       gretel::get w(instrument_names.at(i));
 					       w.execute();
 					   } catch(std::exception const &ex) {
-					       println("EXCEPTION", instrument_names.at(i), ex.what());
+					       println("\x1b[91mEXCEPTION\x1b[0m", instrument_names.at(i), ex.what());
 					   }
 				       }));
     }
@@ -57,11 +58,12 @@ int main(int argc, char* argv[]) {
         std::for_each(feedbook.begin(), feedbook.end(), std::mem_fn(&std::thread::join));
     }
     
-    // display what has been downloaded
-
+    // display what has been downloaded    
     for(std::string const &e: instrument_names) {
+	std::fflush(stdout);
+	std::fflush(stderr);
 	try {
-	    express::parser omega("./CSVD/"+e+".csv");
+	    express::parser omega("./CSVD/"+e+".csv");	    
 	    omega.show();
 	} catch(std::exception const &ex) {
 	    println("Error: ", e, ex.what());

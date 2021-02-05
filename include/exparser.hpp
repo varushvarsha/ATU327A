@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2020  Varush Varsha
+Copyright (C) 2021  Varush Varsha
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,12 +22,12 @@ Copyright (C) 2020  Varush Varsha
 #include "gretel.hpp"
 #include "reader.hpp"
 
-namespace __express { //not exactly ;) (yet!)
+namespace __express { 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     /// REMOVE THIS ///
     template <typename __tp>
     inline void print_vector(__tp const &in_vector) {
-        if(in_vector.size() == 0) { std::__throw_invalid_argument("Error:void print_vector(__tp const &in_vector) size is 0"); }
+        // if(in_vector.size() == 0) { std::__throw_invalid_argument("Error:void print_vector(__tp const &in_vector) size is 0"); }
         using value_tp = typename __tp::value_type;
         using value_it = typename __tp::const_iterator;
         value_it v_iter = in_vector.begin();
@@ -40,7 +40,7 @@ namespace __express { //not exactly ;) (yet!)
     template <typename __tp_double, typename __tp_string, expression_type __tp_container,
 	      typename __tp_gretel, typename __tp_aux_reader,
 	      typename __tp_splitstring>
-    struct __exparser {
+    struct __exparser { /* notwithstanding the file IO syscalls; this certainly could be made more faster */
 	using string_type   = __tp_string;
 	using reader_type   = __tp_aux_reader;
 	using double_type   = __tp_double;
@@ -101,7 +101,7 @@ namespace __express { //not exactly ;) (yet!)
 		}
 		total_size = valid_size;
 	    }
-	    //for(vx_double e: {open, high, low, close, adj_close, volume}) { e.shrink_to_fit(); } /* this does nothing */
+
 	    dates.shrink_to_fit(); open.shrink_to_fit();
 	    high.shrink_to_fit(); low.shrink_to_fit(); 
 	    close.shrink_to_fit(); adj_close.shrink_to_fit(); 
@@ -109,29 +109,30 @@ namespace __express { //not exactly ;) (yet!)
 	    _lines.clear();
 	    if(total_size < 5) { std::__throw_length_error("Error: __exparser() [Valid line count is too low!]"); }
 	}
-	inline constexpr vx_string   get_lines() const noexcept(false) { return this->_lines;      }
-	inline constexpr std::size_t get_size()  const noexcept(false) { return this->total_size;  }
+	inline constexpr vx_string   get_lines()       const noexcept(false) { return this->_lines;      }
+	inline constexpr std::size_t get_size()        const noexcept(false) { return this->total_size;  }
 	// tuning section
-	inline constexpr vx_string get_dates()  const noexcept(false) {  return dates;  }
-	inline constexpr vx_double get_open()   const noexcept(false) {  return open;   }
-	inline constexpr vx_double get_high()        const noexcept(false) {  return high;      }
-	inline constexpr vx_double get_low()         const noexcept(false) {  return low;       }
-	inline constexpr vx_double get_adj_close()   const noexcept(false) {  return adj_close; }
-	inline constexpr vx_double get_close()       const noexcept(false) {  return close;     }
-	inline constexpr vx_double get_volume()      const noexcept(false) {  return volume;    }
+	inline constexpr vx_string   get_dates()       const noexcept(false) {  return dates;  }
+	inline constexpr vx_double   get_open()        const noexcept(false) {  return open;   }
+	inline constexpr vx_double   get_high()        const noexcept(false) {  return high;      }
+	inline constexpr vx_double   get_low()         const noexcept(false) {  return low;       }
+	inline constexpr vx_double   get_adj_close()   const noexcept(false) {  return adj_close; }
+	inline constexpr vx_double   get_close()       const noexcept(false) {  return close;     }
+	inline constexpr vx_double   get_volume()      const noexcept(false) {  return volume;    }
 	
 	inline void show() const noexcept(false) {
+	    char const *tail_description = "Last FIVE Entries for ";
 	    printf("\x1b[95mLines (%ld)\x1b[0m"
-		   "\x1b[92m%s [%25s]:\x1b[0m\n", total_size, "Last FIVE Entries for ", _file_name.c_str());
+		   "\x1b[92m%s\x1b[0m [\x1b[97m%25s\x1b[0m]:\x1b[0m\n", total_size, tail_description, _file_name.c_str());
 	    for(std::size_t i=total_size-5; i<total_size; ++i) {
 		long long int const vd = static_cast<long long int>(volume[i]);
 		std::fprintf(stderr,
-			     "\x1b[93m[%s]\t%f\t%f\t%f\t%f\t%f\t\t%lld\x1b[0m\n", dates[i].c_str(),
+			     "[\x1b[92m%s\x1b[0m]\x1b[97m\t%f\t%f\t%f\t%f\t%f\t\t%lld\x1b[0m\n", dates[i].c_str(),
 			     open[i], high[i], low[i], close[i], adj_close[i], vd);
 	    }
 	}
 	inline virtual ~__exparser() {
-//			dates.clear(); open.clear(); high.clear(); low.clear(); adj_close.clear(); volume.clear();
+	    std::fflush(stderr);
 	}
     };
 }

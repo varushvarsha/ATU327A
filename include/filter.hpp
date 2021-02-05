@@ -16,28 +16,19 @@ Copyright (C) 2021  Varush Varsha
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __HANSEL_AND_GRETEL_HPP
-#define __HANSEL_AND_GRETEL_HPP 1
+#ifndef __FILTER_HPP
+#define __FILTER_HPP  1
 
-
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <utility>
-#include <functional>
+#include <stdexcept>
+#include <vector>
 #include <string>
-#include <tuple>
-#include <algorithm>
 #include <fstream>
-#include <iostream>
-#include <string>
-#include "__defines.hpp"
-#include "hansel.hpp"
 #include "gretel.hpp"
 #include "reader.hpp"
-#include "filter.hpp"
-#include "agr.hpp"
-#include "exparser.hpp"
+
+namespace __filter {
+    // as to concoct algos for selection
+}
 
 
-#endif // __HANSEL_AND_GRETEL_HPP
+#endif // __FILTER_HPP

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2020  Varush Varsha
+Copyright (C) 2021  Varush Varsha
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -87,19 +87,18 @@ namespace __hansel {
     public:
         inline constexpr __get_web_page_op_cookie_string() = delete;
         inline constexpr __get_web_page_op_cookie_string(string_type const &url): _instrument_name(url),
-            _op_buffer(""),
-            _cookie(""),
-            _crumb("")
-        {
+										  _op_buffer(""),
+										  _cookie(""),
+										  _crumb("") {
             /* N.B.
-         * it is imperative to do all this stuff in this single constructor;
-         * as attempts to modularize the code would result in callback complexities
-         * when used in threaded application.
-         *
-         * For an engaging discussion on this problem and its prescribed solution as boost.fiber
-         * by Nat Goodspeed, please refer to his (https://www.youtube.com/watch?v=e-NUmyBou8Q)
-         * intresting presentation on this subject.
-         */
+	     * it is imperative to do all this stuff in this single constructor;
+	     * as attempts to modularize the code would result in callback complexities
+	     * when used in threaded application.
+	     *
+	     * For an engaging discussion on this problem and its prescribed solution as boost.fiber
+	     * by Nat Goodspeed, please refer to his (https://www.youtube.com/watch?v=e-NUmyBou8Q)
+	     * intresting presentation on this subject. */
+
             string_type const web_url = "https://in.finance.yahoo.com/quote/"+_instrument_name+"?p="+_instrument_name;
             string_type cookie;
 
@@ -115,6 +114,7 @@ namespace __hansel {
             curl_easy_perform(curl);
             response = curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &cookies);
             if(response != CURLE_OK) {
+		unload();
                 string_type const err_string = "Error: __get_web_page_op_cookie_string() [" +
                                                string_type(curl_easy_strerror(response)) + "]";
                 std::__throw_invalid_argument(err_string.c_str());
@@ -145,7 +145,10 @@ namespace __hansel {
                 }
             }
 
-            if(inner_index == 0) { std::__throw_logic_error("Error: Not parsed correctly");  }
+            if(inner_index == 0) {
+		unload();
+		std::__throw_logic_error("Error: Not parsed correctly");
+	    }
 
             string_type _krumb = "";
             for(std::size_t i=inner_index; i<web_string.size(); ++i) {
@@ -155,10 +158,7 @@ namespace __hansel {
                 } else { break; }
             }
             unicode_type krumb(_krumb);
-            _crumb = krumb.decode();
-
-            curl_slist_free_all(cookies);
-            curl_easy_cleanup(curl); curl_global_cleanup();
+            _crumb = krumb.decode();            
         }
         inline constexpr string_type get_cookie()      const noexcept(false) { return this->_cookie; }
         inline constexpr string_type get_crumb()       const noexcept(false) { return this->_crumb;  }
@@ -166,6 +166,15 @@ namespace __hansel {
         //for comapatibilities
         inline constexpr string_type get_cookie_value() const noexcept(false) { return this->get_cookie(); }
         inline constexpr string_type get_crumb_value()  const noexcept(false) { return this->get_crumb();  }
+	inline constexpr void unload() {
+	    curl_slist_free_all(cookies);
+	    if(nc) { curl_slist_free_all(nc); }
+            curl_easy_cleanup(curl);
+	    curl_global_cleanup();	    
+	}	
+	inline virtual ~__get_web_page_op_cookie_string() {
+	    unload();
+	}
     };
 }
 

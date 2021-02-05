@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2020  Varush Varsha
+Copyright (C) 2021  Varush Varsha
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ Copyright (C) 2020  Varush Varsha
 
 namespace __csv_ops {
     namespace __reader {	
-	template <expression_type __tp_holder, typename __tp_string>
+	template <expression_type __tp_container, typename __tp_string>
 	struct __split_string {
 	public:
 	    using    string_type =   __tp_string;
-	    using  vector_string =   __tp_holder<__tp_string>;
+	    using  vector_string =   __tp_container<__tp_string>;
 	    using      char_type =     char;
 	private:
 	    string_type     _in_string;
@@ -74,13 +74,14 @@ namespace __csv_ops {
 	    inline constexpr bool exists()          const noexcept(false) { return _vr_string.size() > 1; }
 	    inline constexpr std::size_t how_many() const noexcept(false) { return _vr_string.size(); }
 	    inline constexpr vector_string get_vector_string() const noexcept(false) { return _vr_string; }
-	};
-	using split_string = __split_string<std::vector, std::string>; //split_string shorthand
-	template <expression_type __tp_holder, typename __tp_string, typename __tp_fstream, typename __tp_char_traits>
+	    inline ~__split_string() {} 
+	};	
+	
+	template <expression_type __tp_container, typename __tp_string, typename __tp_fstream, typename __tp_char_traits>
 	struct __reader {
 	public:
 	    using string_type         = __tp_string;
-	    using string_v_type       = __tp_holder<__tp_string>;
+	    using string_v_type       = __tp_container<__tp_string>;
 	    using stream_type         = __tp_fstream;
 	    using char_trtype         = __tp_char_traits;
 	private:
@@ -110,13 +111,12 @@ namespace __csv_ops {
 	    inline virtual ~__reader() {
 	    }
 	};
-	using in_reader = __reader<std::vector, std::string, std::basic_ifstream<char>, std::char_traits<char>>;
     }
 }
 
 namespace reader {
-    using  split_string  =   __csv_ops::__reader::split_string;
-    using  reader        =   __csv_ops::__reader::in_reader;
+    using  split_string  =   __csv_ops::__reader::__split_string<std::vector, std::string>; //split_string shorthand
+    using  reader        =   __csv_ops::__reader::__reader<std::vector, std::string, std::basic_ifstream<char>, std::char_traits<char>>;
 }
 
 

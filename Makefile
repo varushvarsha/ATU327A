@@ -12,6 +12,6 @@ main: main.o
 main.o: main.cpp
 
 clean:
-	rm -rf *.o *~ main
+	rm -rf *.o *~ ./include/*~ main
 flush:
-	rm -rf *~ main
+	rm -rf *~ ./include/*~ main
